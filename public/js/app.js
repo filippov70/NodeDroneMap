@@ -98,9 +98,49 @@ $(document).ready(function () {
                 });
         if (url) {
             //console.log();
-            createInfoContetnt(url);
+            //createInfoContetnt(url);
         }
     });
+
+    // Geocoder
+
+    /**
+     * geocoder Popup
+     **/
+    var container = $('#popup')[0],
+            content = $('#popup-content')[0],
+            closer = $('#popup-closer')[0],
+            overlay = new ol.Overlay({
+                element: container,
+                offset: [0, -40]
+            });
+    closer.onclick = function () {
+        overlay.setPosition(undefined);
+        closer.blur();
+        return false;
+    };
+    
+    //Instantiate with some options and add the Control
+    var geocoder = new Geocoder('nominatim', {
+        provider: 'osm',
+        lang: 'ru-RU',
+        placeholder: 'Город, посёлок...',
+        limit: 15,
+        keepOpen: true
+    });
+    map.addControl(geocoder);
+
+    //Listen when an address is chosen
+    geocoder.on('addresschosen', function (evt) {
+        var feature = evt.feature,
+            coord = evt.coordinate,
+            address_html = feature.get('address_html');
+        content.innerHTML = '<p>' + address_html + '</p>';
+        overlay.setPosition(coord);
+    });
+
+    map.addOverlay(overlay);
+
     function createInfoContetnt(url) {
         $.ajax({
             url: url,

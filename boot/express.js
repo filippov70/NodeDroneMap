@@ -40,7 +40,7 @@ module.exports = function (app) {
     app.use(gfproxy(/\/gf\/(.*)/, ''));
 
     app.use(express.logger('dev'));
-    app.use(express.static(path.join(__dirname + "/..", 'public')));
+    app.use(express.static(path.join(__dirname + '/..', 'public')));
     app.use(express.json());
     app.use(express.urlencoded());
     app.use(express.methodOverride());
@@ -53,7 +53,7 @@ module.exports = function (app) {
 
     app.use(app.router);
 
-    if ('development' == app.get('env')) {
+    if ('development' === app.get('env')) {
         app.use(express.errorHandler());
     }
 };
