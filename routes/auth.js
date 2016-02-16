@@ -18,32 +18,18 @@
 
 
 var passport = require('passport');
+var path    = require("path");
 
 module.exports = function (app) {  
-    
-   
-    /*роут на map2*/
-    app.get('/admin', function (req, res) {
-        if (req.isAuthenticated()) {
-            if (req.path === '/'+req.user.username){
-                res.render('maps/'+req.user.username+'.ejs');
-                return;
-            }
-        }       
-           
-        res.redirect('/auth');
-    });    
 
     /*роут на map*/
-    app.get('/map', function (req, res) {
-        if (req.isAuthenticated()) {
-            if (req.path === '/'+req.user.username){
-                res.render('maps/'+req.user.username+'.ejs');
-                return;
-            }
-        }      
+    app.get('/admin', function (req, res) {
+        //if (req.isAuthenticated()) {
+            res.sendfile(path.join(__dirname + '/..' +'/public/admin.html'));
+            return;
+        //}      
            
-        res.redirect('/auth');
+        //res.redirect('/auth');
     });
 
     /*роут на auth*/
@@ -57,19 +43,23 @@ module.exports = function (app) {
             error: req.flash('error') 
         });
     });
-
+    
+    app.get('/', function(req, res) {
+        return ; 
+    });
+    
     /*роут на главную страницу*/
-    app.get('/', function (req, res) {
-
-        if (req.isAuthenticated()) {
-            res.render('index.ejs', {
-                user: req.user
-            });
-            return;
-        }     
-           
-        res.redirect('/auth');
-    });     
+//    app.get('/', function (req, res) {
+//
+//        if (req.isAuthenticated()) {
+//            res.render('index.ejs', {
+//                user: req.user
+//            });
+//            return;
+//        }     
+//           
+//        res.redirect('/auth');
+//    });     
 
     /*роут на logout*/
     app.get('/sign-out', function (req, res) {
