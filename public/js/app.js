@@ -26,36 +26,65 @@ $(document).ready(function () {
 
 // Рабочие слои
     var pointsLayer = new ol.layer.Vector({
-        title: 'Съёмка'
-//        style: new ol.style.Style({
-//            image: new ol.style.Circle({
-//                radius: 5,
-//                stroke: new ol.style.Stroke({
-//                    color: 'green'
-//                })
-//            })
-//        })
+        title: 'Съёмка',
+        style: new ol.style.Style({
+            image: new ol.style.Icon({
+                src: '/js/drone.png',
+                scale: 0.18,
+                fill: [255, 0, 0, 0.5]
+                        //anchor: [0,0]
+            })
+        })
     });
+    var polygonLayer = new ol.layer.Vector({
+        title: 'Покрытие съёмкой',
+        style: new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: [255, 0, 0, 0.5],
+                width: 7,
+                lineCap: 'round'
+            })
+        })
+    });
+
     var geoJSONFormat = new ol.format.GeoJSON();
 
-    var vectorSource = new ol.source.Vector({
-        
+    var pointSource = new ol.source.Vector({
         loader: function (extent, resolution, vectorDataProj) {
             var url = '/data?lname=points';// + extent.join(',');
             $.ajax({
                 url: url,
                 success: function (data) {
-                    var features = geoJSONFormat.readFeatures(data,{
+                    var features = geoJSONFormat.readFeatures(data, {
                         dataProjection: 'EPSG:4326',
                         featureProjection: 'EPSG:3857'
                     });
-                    vectorSource.addFeatures(features);
+                    pointSource.addFeatures(features);
                 }
             });
         },
         strategy: ol.loadingstrategy.bbox
     });
-    pointsLayer.setSource(vectorSource);
+    
+    var polygonSource = new ol.source.Vector({
+        loader: function (extent, resolution, vectorDataProj) {
+            var url = '/data?lname=area';// + extent.join(',');
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    var features = geoJSONFormat.readFeatures(data, {
+                        dataProjection: 'EPSG:4326',
+                        featureProjection: 'EPSG:3857'
+                    });
+                    polygonSource.addFeatures(features);
+                }
+            });
+        },
+        strategy: ol.loadingstrategy.bbox
+    });
+
+    pointsLayer.setSource(pointSource);
+    polygonLayer.setSource(polygonSource);
 //    $.getJSON("/data?lname=points", function (layerJSON) {
 //
 //        if (layerJSON.features.length > 0)
@@ -121,11 +150,11 @@ $(document).ready(function () {
             new ol.layer.Group({
                 title: 'Съёмки',
                 layers: [
-                    pointsLayer
+                    pointsLayer, polygonLayer
                 ]})],
         view: new ol.View({
             center: ol.proj.transform([85, 56.5], 'EPSG:4326', 'EPSG:3857'),
-            zoom: 12
+            zoom: 11
         })
     });
     // Переключатель слоёв
