@@ -21,7 +21,20 @@ var passport = require('passport');
 var path    = require("path");
 
 module.exports = function (app) {  
-
+    
+    /*роут на получение данных*/
+    app.get('/data', function (req, res) {
+        var lname = req.param('lname');
+        console.log(lname);
+        if (lname) {
+            res.sendfile(path.join(__dirname + '/..' 
+                    + '/server/data/' + lname +'.geojson'));
+            return;
+        }      
+           
+        //res.redirect('/auth');
+    });
+    
     /*роут на map*/
     app.get('/admin', function (req, res) {
         //if (req.isAuthenticated()) {

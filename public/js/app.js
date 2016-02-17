@@ -25,32 +25,77 @@
 $(document).ready(function () {
 
 // Рабочие слои
-    var imgLayerBoundSrc = new ol.source.ImageWMS({
-        url: 'http://localhost:8181/geoserver/wms',
-        params: {
-            'LAYERS': 'raster:raster_mesh',
-            'VERSION': '1.1.0',
-            'transparent': 'true'
-        }
-    });
-    var imgLayerBound = new ol.layer.Image({
-        source: imgLayerBoundSrc,
-        opacity: 0.7,
-        title: 'Съёмка. Границы'
-    });
-    var imgLayerSrc = new ol.source.ImageWMS({
-        url: 'http://localhost:8181/geoserver/wms',
-        params: {
-            'LAYERS': 'raster:orthofoto',
-            'transparent': 'true'
-        }
-    });
-    var imgLayer = new ol.layer.Image({
-        source: imgLayerSrc,
-        opacity: 1.0,
-        visible: false,
+    var pointsLayer = new ol.layer.Vector({
         title: 'Съёмка'
+//        style: new ol.style.Style({
+//            image: new ol.style.Circle({
+//                radius: 5,
+//                stroke: new ol.style.Stroke({
+//                    color: 'green'
+//                })
+//            })
+//        })
     });
+    var geoJSONFormat = new ol.format.GeoJSON();
+
+    var vectorSource = new ol.source.Vector({
+        
+        loader: function (extent, resolution, vectorDataProj) {
+            var url = '/data?lname=points';// + extent.join(',');
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    var features = geoJSONFormat.readFeatures(data,{
+                        dataProjection: 'EPSG:4326',
+                        featureProjection: 'EPSG:3857'
+                    });
+                    vectorSource.addFeatures(features);
+                }
+            });
+        },
+        strategy: ol.loadingstrategy.bbox
+    });
+    pointsLayer.setSource(vectorSource);
+//    $.getJSON("/data?lname=points", function (layerJSON) {
+//
+//        if (layerJSON.features.length > 0)
+//        {
+//            var layerSource = new ol.source.GeoJSON({
+//                //style: styleFunction,
+//                defaultProjection: 'EPSG:4326',
+//                projection: "EPSG:3857",
+//                object: layerJSON
+//            });
+//
+//            pointsLayer.setSource(layerSource);
+//        }
+//    });
+//    var imgLayerBoundSrc = new ol.source.ImageWMS({
+//        url: 'http://localhost:8181/geoserver/wms',
+//        params: {
+//            'LAYERS': 'raster:raster_mesh',
+//            'VERSION': '1.1.0',
+//            'transparent': 'true'
+//        }
+//    });
+//    var imgLayerBound = new ol.layer.Image({
+//        source: imgLayerBoundSrc,
+//        opacity: 0.7,
+//        title: 'Съёмка. Границы'
+//    });
+//    var imgLayerSrc = new ol.source.ImageWMS({
+//        url: 'http://localhost:8181/geoserver/wms',
+//        params: {
+//            'LAYERS': 'raster:orthofoto',
+//            'transparent': 'true'
+//        }
+//    });
+//    var imgLayer = new ol.layer.Image({
+//        source: imgLayerSrc,
+//        opacity: 1.0,
+//        visible: false,
+//        title: 'Съёмка'
+//    });
     // Карта с подложками
     var map = new ol.Map({
         target: 'map',
@@ -76,8 +121,7 @@ $(document).ready(function () {
             new ol.layer.Group({
                 title: 'Съёмки',
                 layers: [
-                    imgLayer,
-                    imgLayerBound
+                    pointsLayer
                 ]})],
         view: new ol.View({
             center: ol.proj.transform([85, 56.5], 'EPSG:4326', 'EPSG:3857'),
@@ -119,7 +163,7 @@ $(document).ready(function () {
         closer.blur();
         return false;
     };
-    
+
     //Instantiate with some options and add the Control
     var geocoder = new Geocoder('nominatim', {
         provider: 'osm',
@@ -133,8 +177,8 @@ $(document).ready(function () {
     //Listen when an address is chosen
     geocoder.on('addresschosen', function (evt) {
         var feature = evt.feature,
-            coord = evt.coordinate,
-            address_html = feature.get('address_html');
+                coord = evt.coordinate,
+                address_html = feature.get('address_html');
         content.innerHTML = '<p>' + address_html + '</p>';
         overlay.setPosition(coord);
     });
