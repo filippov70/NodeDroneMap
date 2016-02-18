@@ -24,14 +24,14 @@
 
 $(document).ready(function () {
 
-// Рабочие слои
+    // Рабочие слои
     var pointsLayer = new ol.layer.Vector({
         title: 'Съёмка',
         style: new ol.style.Style({
             image: new ol.style.Icon({
-                src: '/js/drone.png',
-                scale: 0.18,
-                fill: [255, 0, 0, 0.5]
+                src: '/img/location-pin.png',
+                scale: 1
+                        //fill: [255, 0, 0, 0.5]
                         //anchor: [0,0]
             })
         })
@@ -51,7 +51,7 @@ $(document).ready(function () {
 
     var pointSource = new ol.source.Vector({
         loader: function (extent, resolution, vectorDataProj) {
-            var url = '/data?lname=points';// + extent.join(',');
+            var url = '/data?lname=points';
             $.ajax({
                 url: url,
                 success: function (data) {
@@ -65,7 +65,7 @@ $(document).ready(function () {
         },
         strategy: ol.loadingstrategy.bbox
     });
-    
+
     var polygonSource = new ol.source.Vector({
         loader: function (extent, resolution, vectorDataProj) {
             var url = '/data?lname=area';// + extent.join(',');
@@ -79,52 +79,15 @@ $(document).ready(function () {
                     polygonSource.addFeatures(features);
                 }
             });
-        },
-        strategy: ol.loadingstrategy.bbox
+        }
+        //strategy: ol.loadingstrategy.bbox
     });
 
     pointsLayer.setSource(pointSource);
     polygonLayer.setSource(polygonSource);
-//    $.getJSON("/data?lname=points", function (layerJSON) {
-//
-//        if (layerJSON.features.length > 0)
-//        {
-//            var layerSource = new ol.source.GeoJSON({
-//                //style: styleFunction,
-//                defaultProjection: 'EPSG:4326',
-//                projection: "EPSG:3857",
-//                object: layerJSON
-//            });
-//
-//            pointsLayer.setSource(layerSource);
-//        }
-//    });
-//    var imgLayerBoundSrc = new ol.source.ImageWMS({
-//        url: 'http://localhost:8181/geoserver/wms',
-//        params: {
-//            'LAYERS': 'raster:raster_mesh',
-//            'VERSION': '1.1.0',
-//            'transparent': 'true'
-//        }
-//    });
-//    var imgLayerBound = new ol.layer.Image({
-//        source: imgLayerBoundSrc,
-//        opacity: 0.7,
-//        title: 'Съёмка. Границы'
-//    });
-//    var imgLayerSrc = new ol.source.ImageWMS({
-//        url: 'http://localhost:8181/geoserver/wms',
-//        params: {
-//            'LAYERS': 'raster:orthofoto',
-//            'transparent': 'true'
-//        }
-//    });
-//    var imgLayer = new ol.layer.Image({
-//        source: imgLayerSrc,
-//        opacity: 1.0,
-//        visible: false,
-//        title: 'Съёмка'
-//    });
+
+
+
     // Карта с подложками
     var map = new ol.Map({
         target: 'map',
@@ -132,6 +95,12 @@ $(document).ready(function () {
             new ol.layer.Group({
                 title: 'Базовые слои',
                 layers: [
+                    new ol.layer.Tile({
+                        source: new ol.source.MapQuest({
+                            layer: 'osm',
+                            title: 'OSM MapQuest'
+                        })
+                    }),
                     new ol.layer.Tile({
                         source: new ol.source.OSM(),
                         type: 'base',
@@ -148,9 +117,9 @@ $(document).ready(function () {
                         })
                     })]}),
             new ol.layer.Group({
-                title: 'Съёмки',
+                title: 'Съёмки с БПЛА',
                 layers: [
-                    pointsLayer, polygonLayer
+                    polygonLayer, pointsLayer
                 ]})],
         view: new ol.View({
             center: ol.proj.transform([85, 56.5], 'EPSG:4326', 'EPSG:3857'),
@@ -159,39 +128,54 @@ $(document).ready(function () {
     });
     // Переключатель слоёв
     var layerSwitcher = new ol.control.LayerSwitcher({
-        tipLabel: 'Слои' // Optional label for button
+        tipLabel: 'Слои карты'
     });
     map.addControl(layerSwitcher);
     // 
-    map.on('singleclick', function (evt) {
-        var viewResolution = /** @type {number} */ (map.getView().getResolution());
-        var url = imgLayerBoundSrc.getGetFeatureInfoUrl(
-                evt.coordinate, viewResolution, 'EPSG:3857', {
-                    'INFO_FORMAT': 'application/json' //text/xml, application/geojson, text/html
+    map.on('click', function (evt) {
+        var popupData = '';
+        map.forEachFeatureAtPixel(evt.pixel,
+                function (feature, layer) {
+                    popupData += '<p>' + feature.get('name') + '</p>';
                 });
-        if (url) {
-            //console.log();
-            //createInfoContetnt(url);
+        if (popupData !== '') {
+            console.log(popupData);
+            popup.setPosition(evt.coordinate);
+            popupInner[0].innerHTML = popupData;
+            $(container).popover({
+                'placement': 'top',
+                'html': true
+                //'content': popupData
+            });
+            $(container).popover('show');
+        } else {
+            $(container).popover('destroy');
         }
     });
 
+ //change mouse cursor when over marker
+    map.on('pointermove', function (e) {
+        if (e.dragging) {
+            $(container).popover('destroy');
+            return;
+        }
+//        var pixel = map.getEventPixel(e.originalEvent);
+//        var hit = map.hasFeatureAtPixel(pixel);
+//        var mapElement = map.getTarget();
+        //mapElement.style.cursor = hit ? 'pointer' : '';
+    });
+
+    var container = $('#popup')[0];
+    var popupInner = $('#popup-content');
+    var popup = new ol.Overlay({
+        element: container,
+        stopEvent: false
+    });
+    map.addOverlay(popup);
+    
+    
     // Geocoder
 
-    /**
-     * geocoder Popup
-     **/
-    var container = $('#popup')[0],
-            content = $('#popup-content')[0],
-            closer = $('#popup-closer')[0],
-            overlay = new ol.Overlay({
-                element: container,
-                offset: [0, -40]
-            });
-    closer.onclick = function () {
-        overlay.setPosition(undefined);
-        closer.blur();
-        return false;
-    };
 
     //Instantiate with some options and add the Control
     var geocoder = new Geocoder('nominatim', {
@@ -204,15 +188,14 @@ $(document).ready(function () {
     map.addControl(geocoder);
 
     //Listen when an address is chosen
-    geocoder.on('addresschosen', function (evt) {
-        var feature = evt.feature,
-                coord = evt.coordinate,
-                address_html = feature.get('address_html');
-        content.innerHTML = '<p>' + address_html + '</p>';
-        overlay.setPosition(coord);
-    });
+//    geocoder.on('addresschosen', function (evt) {
+//        var feature = evt.feature,
+//                coord = evt.coordinate,
+//                address_html = feature.get('address_html');
+//        content.innerHTML = '<p>' + address_html + '</p>';
+//        overlay.setPosition(coord);
+//    });
 
-    map.addOverlay(overlay);
 
     function createInfoContetnt(url) {
         $.ajax({
