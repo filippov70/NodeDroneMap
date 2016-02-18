@@ -25,13 +25,20 @@ module.exports = function (app) {
     /*роут на получение данных*/
     app.get('/data', function (req, res) {
         var lname = req.param('lname');
-        console.log(lname);
+        //console.log(lname);
         if (lname) {
             res.sendfile(path.join(__dirname + '/..' 
                     + '/server/data/' + lname +'.geojson'));
             return;
-        }      
-           
+        }
+        
+        var img = req.param('img');
+        //console.log(lname);
+        if (img) {
+            res.sendfile(path.join(__dirname + '/..' 
+                    + '/server/data/img/' + img +'.jpg'));
+            return;
+        }   
         //res.redirect('/auth');
     });
     

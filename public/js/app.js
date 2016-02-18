@@ -60,10 +60,11 @@ $(document).ready(function () {
                         featureProjection: 'EPSG:3857'
                     });
                     pointSource.addFeatures(features);
+                    console.log(features);
                 }
             });
-        },
-        strategy: ol.loadingstrategy.bbox
+        }
+        //strategy: ol.loadingstrategy.bbox
     });
 
     var polygonSource = new ol.source.Vector({
@@ -136,7 +137,14 @@ $(document).ready(function () {
         var popupData = '';
         map.forEachFeatureAtPixel(evt.pixel,
                 function (feature, layer) {
-                    popupData += '<p>' + feature.get('name') + '</p>';
+                    console.log(layer);
+                    //console.log(feature.get('name'));
+                    if (layer.get('title') === 'Покрытие съёмкой') {
+                        popupData += '<p>' + feature.get('name') + '</p>';
+                    } else {
+                        popupData += '<p><a target="blank" href="/data?img=' + feature.get('name') +
+                                '">Просмотр снимка</a></p>';
+                    }
                 });
         if (popupData !== '') {
             console.log(popupData);
@@ -145,7 +153,7 @@ $(document).ready(function () {
             $(container).popover({
                 'placement': 'top',
                 'html': true
-                //'content': popupData
+                        //'content': popupData
             });
             $(container).popover('show');
         } else {
@@ -153,7 +161,7 @@ $(document).ready(function () {
         }
     });
 
- //change mouse cursor when over marker
+    //change mouse cursor when over marker
     map.on('pointermove', function (e) {
         if (e.dragging) {
             $(container).popover('destroy');
@@ -172,8 +180,8 @@ $(document).ready(function () {
         stopEvent: false
     });
     map.addOverlay(popup);
-    
-    
+
+
     // Geocoder
 
 
