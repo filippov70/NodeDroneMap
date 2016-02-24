@@ -31,8 +31,25 @@ THE SOFTWARE.
         <link href="js/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-        <div id="main">
-            
+        <div id="main" class="container-fluid">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="header-right">
+                        <div class="location">
+                            <a href="/sign-out"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Выход</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="well">
+                <form class="navbar-form" >
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Кординаты полигона">
+                    </div>
+                    <button type="submit" class="btn btn-default">Отправить</button>
+                </form>
+            </div>
         </div>
     </body>
 </html>

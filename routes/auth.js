@@ -42,14 +42,14 @@ module.exports = function (app) {
         //res.redirect('/auth');
     });
     
-    /*роут на map*/
+    /*роут на admin*/
     app.get('/admin', function (req, res) {
-        //if (req.isAuthenticated()) {
+        if (req.isAuthenticated()) {
             res.sendfile(path.join(__dirname + '/..' +'/public/admin.html'));
             return;
-        //}      
+        }      
            
-        //res.redirect('/auth');
+        res.redirect('/auth');
     });
 
     /*роут на auth*/
@@ -59,7 +59,7 @@ module.exports = function (app) {
             return;
         }
 
-        res.render('auth', {
+        res.render('auth.jade', {
             error: req.flash('error') 
         });
     });

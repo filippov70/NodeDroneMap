@@ -27,11 +27,11 @@ var gfproxy = require('./gfproxy');
 module.exports = function (app) {
 
     app.set('port', conf.get("app:port") || 3000);
-    //app.set('views', path.join(__dirname + "/..", 'views'));
-    //app.set('view engine', 'jade');
+    app.set('views', path.join(__dirname + "/..", 'views'));
+    app.set('view engine', 'jade');
 
     var sessionOptions = conf.get("session");
-    if ('production' == app.get('env')) {
+    if ('production' === app.get('env')) {
         var MemcachedStore = require('connect-memcached')(express);
         sessionOptions.store = new MemcachedStore(conf.get("memcached"));
     }

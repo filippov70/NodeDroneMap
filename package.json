@@ -4,20 +4,20 @@
     "keywords": ["util", "functional", "server", "client", "browser"],
     "author": "filippov",
     "contributors": [],
-    "dependencies": {},
     "scripts": {
         "start": "node server.js"
     },
     "dependencies": {
       "connect-flash": "^0.1.1",
-      
+      "jade": "^1.*.*",
       "express": "^3.*.*",
       "request": "^2.*.*",
       "fs": "^0.0.2",
       "nconf": "^0.7.1",
       "passport": "^0.2.1",
       "passport-local": "^1.0.0",
-      "winston": "^0.9.0"
+      "winston": "^0.9.0",
+      "json-file": "*"
     }
 
 }
