@@ -34,6 +34,10 @@ $(document).ready(function () {
         style: new ol.style.Style({
             image: new ol.style.Icon({
                 src: '/img/location-pin.png',
+                //anchor: [0.5, 46],
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'pixels',
+                opacity: 0.75,
                 scale: 1
                         //fill: [255, 0, 0, 0.5]
                         //anchor: [0,0]
@@ -161,8 +165,9 @@ $(document).ready(function () {
                         //'content': popupData
             });
             if (imgsrc) {
-
+                $('#full-img').click();
                 $('#sample-img').attr('src', imgsrc);
+                $('#full-img').attr('href', imgsrc);
             }
             $(container).popover('show');
 
@@ -177,10 +182,10 @@ $(document).ready(function () {
             $(container).popover('destroy');
             return;
         }
-//        var pixel = map.getEventPixel(e.originalEvent);
-//        var hit = map.hasFeatureAtPixel(pixel);
-//        var mapElement = map.getTarget();
-        //mapElement.style.cursor = hit ? 'pointer' : '';
+        var pixel = map.getEventPixel(e.originalEvent);
+        var hit = map.hasFeatureAtPixel(pixel);
+        var mapElement = $('#' + map.getTarget());
+        mapElement[0].style.cursor = hit ? 'pointer' : '';
     });
 
     var container = $('#popup')[0];
