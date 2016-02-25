@@ -22,6 +22,10 @@
  * THE SOFTWARE.
  */
 
+function showModal() {
+    $('#info').modal('toggle');
+}
+
 $(document).ready(function () {
 
     // Рабочие слои
@@ -135,19 +139,20 @@ $(document).ready(function () {
     // 
     map.on('click', function (evt) {
         var popupData = '';
+        var imgsrc = '';
         map.forEachFeatureAtPixel(evt.pixel,
                 function (feature, layer) {
-                    console.log(layer);
+                    //console.log(layer);
                     //console.log(feature.get('name'));
                     if (layer.get('title') === 'Покрытие съёмкой') {
                         popupData += '<p>' + feature.get('name') + '</p>';
                     } else {
-                        popupData += '<p><a target="blank" href="/data?img=' + feature.get('name') +
-                                '">Просмотр снимка</a></p>';
+                        imgsrc = '/data?img=' + feature.get('name');
+                        popupData += '<p><a href="#" onclick="showModal();">Просмотр снимка</a></p>';
                     }
                 });
         if (popupData !== '') {
-            console.log(popupData);
+            //console.log(popupData);
             popup.setPosition(evt.coordinate);
             popupInner[0].innerHTML = popupData;
             $(container).popover({
@@ -155,7 +160,12 @@ $(document).ready(function () {
                 'html': true
                         //'content': popupData
             });
+            if (imgsrc) {
+
+                $('#sample-img').attr('src', imgsrc);
+            }
             $(container).popover('show');
+
         } else {
             $(container).popover('destroy');
         }
@@ -177,7 +187,7 @@ $(document).ready(function () {
     var popupInner = $('#popup-content');
     var popup = new ol.Overlay({
         element: container,
-        stopEvent: false
+        stopEvent: true
     });
     map.addOverlay(popup);
 
