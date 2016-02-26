@@ -183,7 +183,12 @@ $(document).ready(function () {
             return;
         }
         var pixel = map.getEventPixel(e.originalEvent);
-        var hit = map.hasFeatureAtPixel(pixel);
+        var hit = map.hasFeatureAtPixel(pixel, function(layer){
+            if (layer.get('title') === 'Съёмка'){
+                return true;
+            }
+            //console.log(layer.get('title'));
+        });
         var mapElement = $('#' + map.getTarget());
         mapElement[0].style.cursor = hit ? 'pointer' : '';
     });
