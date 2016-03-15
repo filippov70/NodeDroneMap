@@ -18,56 +18,56 @@
 
 
 var passport = require('passport');
-var path    = require("path");
+var path = require("path");
 
-module.exports = function (app) {  
-    
+module.exports = function (app) {
+
     /*роут на получение данных*/
     app.get('/data', function (req, res) {
         var lname = req.param('lname');
         //console.log(lname);
         if (lname) {
-            res.sendfile(path.join(__dirname + '/..' 
-                    + '/server/data/' + lname +'.geojson'));
+            res.sendfile(path.join(__dirname + '/..'
+                    + '/server/data/' + lname + '.geojson'));
             return;
         }
-        
+
         var img = req.param('img');
         //console.log(lname);
         if (img) {
-            res.sendfile(path.join(__dirname + '/..' 
-                    + '/server/data/img/' + img +'.jpg'));
+            res.sendfile(path.join(__dirname + '/..'
+                    + '/server/data/img/' + img + '.jpg'));
             return;
-        }   
+        }
         //res.redirect('/auth');
     });
-    
+
     /*роут на admin*/
     app.get('/admin', function (req, res) {
         if (req.isAuthenticated()) {
-            res.sendfile(path.join(__dirname + '/..' +'/public/admin.html'));
+            res.sendfile(path.join(__dirname + '/..' + '/public/admin.html'));
             return;
-        }      
-           
+        }
+
         res.redirect('/auth');
     });
 
     /*роут на auth*/
     app.get('/auth', function (req, res) {
         if (req.isAuthenticated()) {
-            res.redirect('/');
+            res.redirect('/admin');
             return;
         }
 
         res.render('auth.jade', {
-            error: req.flash('error') 
+            error: req.flash('error')
         });
     });
-    
-    app.get('/', function(req, res) {
-        return ; 
+
+    app.get('/', function (req, res) {
+        return;
     });
-    
+
     /*роут на главную страницу*/
 //    app.get('/', function (req, res) {
 //
@@ -88,14 +88,36 @@ module.exports = function (app) {
     });
 
     /* Обработка POST-данных авторизации */
-    app.post('/auth', 
-        passport.authenticate('local', 
-            {
-                successRedirect: '/',
-                failureRedirect: '/auth',
-                failureFlash: true 
-            }
-        )
-    );
+    app.post('/auth',
+            passport.authenticate('local',
+                    {
+                        successRedirect: '/admin',
+                        failureRedirect: '/auth',
+                        failureFlash: true
+                    }
+            )
+            );
+
+    app.post('/setimg', function (req, res, next) {
+        try {
+            console.log(req.body);
+            //req.body содержит данные, переданные от клиента
+            res.end(200);
+        } catch (error) {
+            console.log(error);
+            res.end(500);
+        }
+    });
+
+    app.post('/setdata', function (req, res, next) {
+        try {
+            console.log(req.body);
+            //req.body содержит данные, переданные от клиента
+            res.end(200);
+        } catch (error) {
+            console.log(error);
+            res.end(500);
+        }
+    });
 
 };
