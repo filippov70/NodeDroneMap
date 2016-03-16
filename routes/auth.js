@@ -98,25 +98,34 @@ module.exports = function (app) {
             )
             );
 
-    app.post('/setimg', function (req, res, next) {
-        try {
-            console.log(req.body);
-            //req.body содержит данные, переданные от клиента
-            res.end(200);
-        } catch (error) {
-            console.log(error);
-            res.end(500);
-        }
-    });
+//    app.post('/setimg', function (req, res, next) {
+//        try {
+//            console.log('files', req.files);
+//            res.status(200);
+//            res.end();
+//        } catch (error) {
+//            console.log(error);
+//            res.status(500);
+//            res.end();
+//        }
+//    });
 
     app.post('/setdata', function (req, res, next) {
         try {
-            console.log(req.body);
+            var dataValue = req.body.data;
+            var polyCoord = req.body.polygon;
+            var point1Coord = req.body.point1;
+            var point2Coord = req.body.point2;
+            var point1File = req.body.point1file;
+            var point2File = req.body.point2file;
+            console.log(dataValue, polyCoord, point1Coord, point1File, point2Coord, point2File);
             //req.body содержит данные, переданные от клиента
-            res.end(200);
+            res.status(200);
+            res.end();
         } catch (error) {
             console.log(error);
-            res.end(500);
+            res.status(500);
+            res.end();
         }
     });
 

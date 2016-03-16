@@ -19,9 +19,22 @@
 
 $(function () {
 
-    var firstFile, secondFile, imgURL, jsonURL;
-    imgURL = "http://localhost:3000/setimg/";
+    var jsonURL;
+    //imgURL = "http://localhost:3000/setimg";
     jsonURL = 'http://localhost:3000/setdata';
+
+    // Variable to store your files
+    var files;
+
+// Add events
+    $('input[type=file]').on('change', prepareUpload);
+
+// Grab the files and set them to our variable
+    function prepareUpload(event)
+    {
+        files = event.target.files;
+    }
+
     $('#datetimepicker').datetimepicker(
             {
                 language: 'ru',
@@ -59,27 +72,37 @@ $(function () {
 
         // Stop form from submitting normally
         event.preventDefault();
-
+//
+//        $("#f1, #f2").html5Uploader({
+//            name: "img",
+//            postUrl: imgURL
+//        });
         // Get some values from elements on the page:
         var $form = $(this);
-        var term = $form.find("input[id='data-value']").val();
-
+        var dataValue = $form.find("input[id='data-value']").val();
+        var polyCoord = $form.find("textarea[id='poly-coord']").val();
+        var point1Coord = $form.find("textarea[id='pt1-coord']").val();
+        var point2Coord = $form.find("textarea[id='pt2-coord']").val();
+        var point1File = $form.find("input[id='pt1-file']").val();
+        var point2File = $form.find("input[id='pt2-file']").val();
 
         // Send the data using post
-        var posting = $.post(jsonURL, {data: term});
+        var posting = $.post(jsonURL, 
+        {
+            data: dataValue,
+            polygon: polyCoord,
+            point1: point1Coord,
+            point1file: point1File,
+            point2: point2Coord,
+            point2file: point2File
+        });
 
         // Put the results in a div
         posting.done(function (data) {
-            console.log('POST sending');
-//            var content = $(data).find("#content");
-//            $("#result").empty().append(content);
+            $('#send-btn').addClass('btn-success');
+            $('#send-btn').text('Сохранено');
         });
-        // send file
-        $("#f1, #f2").html5Uploader({
-            name: "img",
-            postUrl: imgURL
-        });
-    });
 
+    });
 
 });

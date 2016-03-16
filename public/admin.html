@@ -54,8 +54,8 @@ THE SOFTWARE.
             <div class="well">
                 <form id="sendForm" role="form">
                     <div class="form-group">
-                        <label for="polyc">Координаты полигона съёмки в WKT</label> 
-                        <textarea id="polyc" class="form-control" ></textarea>
+                        <label for="polyc">Координаты полигона съёмки в GeoJSON</label> 
+                        <textarea id="poly-coord" class="form-control" >{ "type": "Polygon", "coordinates": [ [ [ 84.9482199, 56.4571097 ], [ 84.9492695, 56.4571249 ], [ 84.949343199999987, 56.4571259 ], [ 84.9493691, 56.456579 ], [ 84.9490348, 56.4565742 ], [ 84.9490341, 56.4565894 ], [ 84.9490179, 56.45693 ], [ 84.948229, 56.4569186 ], [ 84.9482199, 56.4571097 ] ] ] }</textarea>
                         </br>
                         <label>Дата съёмки</label>
                         <!--http://itchief.ru/lessons/bootstrap-3/113-bootstrap-3-datetimepicker-->
@@ -67,32 +67,39 @@ THE SOFTWARE.
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pt1c">Координаты первой точки с примером съёмки в WKT</label> 
-                        <textarea id="pt1c" class="form-control" ></textarea>
+                        <label for="pt1c">Координаты первой точки с примером съёмки в GeoJSON</label> 
+                        <textarea id="pt1-coord" class="form-control" >{ "type": "Point", "coordinates": [ 84.949272, 56.459471 ] }</textarea>
                         <div class="input-group">
+                            <input id="pt1-file" type="text" placeholder="имя файла">
+                        </div>
+                        
+<!--                        <div class="input-group">
                             <span class="input-group-btn">
                                 <span class="btn btn-primary btn-file">
                                     Открыть файл первого примера&hellip; <input id="f1" type="file">
                                 </span>
                             </span>
                             <input type="text" class="form-control" readonly>
-                        </div>
+                        </div>-->
                     </div>
                     
                     <div class="form-group">
-                        <label for="pt1c">Координаты второй точки с примером съёмки в WKT</label> 
-                        <textarea id="pt1c" class="form-control" ></textarea>
+                        <label for="pt1c">Координаты второй точки с примером съёмки в GeoJSON</label> 
+                        <textarea id="pt2-coord" class="form-control" >{ "type": "Point", "coordinates": [ 84.949245, 56.457114 ] }</textarea>
                         <div class="input-group">
+                            <input id="pt2-file" type="text" placeholder="имя файла">
+                        </div>
+<!--                        <div class="input-group">
                             <span class="input-group-btn">
                                 <span class="btn btn-primary btn-file">
                                     Открыть файл второго примера&hellip; <input id="f2" type="file">
                                 </span>
                             </span>
                             <input type="text" class="form-control" readonly>
-                        </div>
+                        </div>-->
                     </div>
                     
-                    <button type="submit" class="btn btn-default">Сохранить</button>
+                    <button id="send-btn" type="submit" class="btn btn-primary">Сохранить</button>
                 </form>
             </div>
         </div>
